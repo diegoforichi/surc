@@ -58,7 +58,7 @@ npm install && npm run build
 php artisan serve --port=8001
 ```
 
-En `.env` local: `APP_LOCALE=es` (si el panel sale en inglés, falta este valor). Después de actualizar permisos en una base ya existente: `php artisan surc:sync-roles` (retira el historial al admin de red y agrega `history.print` a sede y operador).
+En `.env` local: `APP_LOCALE=es` (si el panel sale en inglés, falta este valor). Después de actualizar permisos en una base ya existente: `php artisan surc:sync-roles` (historial y órdenes de venta: sede y operador; el admin de red sigue sin leer el cuaderno ni las órdenes).
 
 Panel: `http://127.0.0.1:8001/admin`
 
@@ -97,8 +97,8 @@ No hay URL distinta por rol. Lo que cambia es el **usuario y contraseña**.
 |---|---|---|---|
 | Dueño plataforma | Plataforma → Redes (y el resto según red) | Crear redes | Sí |
 | Admin de red | Configuración, Red, Operativa, Sitio público | Dejar la red lista. **No** lee el cuaderno interno | Sí (`cases.manage`). **No** tiene `history.view` |
-| Admin de clínica | Red (usuarios), Operativa | Casos, agendas y **historial interno** de su sede | Sí (`cases.manage` + `history.*`) |
-| Operador | Dashboard, Agenda y Casos (listados), espacio de trabajo, Capacitación. Si el historial está activo: ficha de sujetos en solo lectura | Recibir, confirmar señas y avanzar casos de su sede. Cargar, finalizar, imprimir y compartir registros del historial interno | No crea ni edita agendas/casos/sujetos: `cases.operate` + `payments.confirm`. Sí `history.view/manage/finalize/share/print` si el módulo está activo |
+| Admin de clínica | Red (usuarios), Operativa | Casos, agendas, **historial interno** y **órdenes de venta** de su sede | Sí (`cases.manage` + `history.*` + catálogo/órdenes) |
+| Operador | Dashboard, Agenda y Casos (listados), espacio de trabajo, Capacitación. Si el historial está activo: ficha de sujetos en solo lectura | Recibir, confirmar señas y avanzar casos de su sede. Cargar, finalizar, imprimir y compartir registros del historial interno. Preparar, emitir y exportar órdenes de su sede | No crea ni edita agendas/casos/sujetos: `cases.operate` + `payments.confirm`. Sí `history.*` y `sales.orders.*` si aplica. **No** cambia precios del catálogo |
 | Especialista | Dashboard, Agenda y Casos **propios**, Capacitación | Atender sus visitas | No: solo `cases.operate`. No confirma pagos |
 
 Operador y especialista **sí ven** los listados de Agenda y Casos (los de su sede, las agendas **abiertas a la red**, y los casos en una agenda de su sede). **No** pueden crear ni editar esos registros: el alta la hace un perfil con `cases.manage`. El especialista no ve Actores ni Sujetos. El **operador**, si la red y la sede tienen el historial activo, puede **abrir** la ficha del sujeto (solo lectura) para cargar el cuaderno interno; no edita nombre, código ni dueño.
@@ -416,14 +416,25 @@ No es una historia clínica veterinaria fija ni una agenda interna: es un **cuad
 1. En **Preferencias operativas**, activar **Habilitar** el módulo a nivel red (lo hace el admin de red).
 2. En cada sede, activar **Usar** el mismo módulo.
 3. En **Operativa → Sujetos**, abrir la ficha con una cuenta de **sede** (admin de clínica u operador). El admin de red configura tipos y flags; **no** lee, edita, comparte ni imprime el contenido.
-4. Cargar un registro: tipo (los define la red; en veterinaria: Consulta, Control, Vacuna y Estudio), fecha, resumen, campos extra del tipo y adjuntos privados si hace falta. **Finalizar**. Lo finalizado no se edita: se corrige con **adenda** (queda agrupada en el detalle, no como fila nueva).
-5. **Descargar PDF** (un registro final) o **Descargar ficha PDF** (todos los finales de esa sede, con adendas debajo de cada original). No incluye borradores ni archivos binarios; sí lista los nombres de adjuntos. Cada descarga queda en el registro de actividad.
+4. Cargar un registro desde la **ficha de historial** (botón en la ficha del sujeto): acciones rápidas por tipo (Consulta, Control, Vacuna, Estudio u otros de la red), fecha, resumen (si queda vacío se propone desde hallazgos/producto/resultados al finalizar), campos extra y adjuntos privados. El borrador puede quedar incompleto; **Finalizar** exige los campos obligatorios del tipo. Lo finalizado no se edita: se corrige con **adenda**.
+5. **Descargar PDF** (un registro final) o **Descargar ficha PDF** (carátula con identidad, último peso y próximos controles, luego los finales de esa sede con adendas). No incluye borradores ni archivos binarios; sí lista los nombres de adjuntos. Cada descarga queda en el registro de actividad.
 6. **Compartir con caso** es opt-in y solo en registros **finalizados**. Si no se comparte, el especialista no ve nada de ese cuaderno. El destino aparece en **Compartido con** y, en el espacio de trabajo, como **Historial compartido** (tipo, fecha y resumen; sin adjuntos ni cuaderno completo).
 7. **Incorporar resultado al historial** solo en un caso **cerrado**, una vez.
+8. El dashboard muestra **Próximos de mi clínica** (vencidos, 7 y 30 días) solo con registros **finales** de la sede del usuario.
 
-Cuotas, facturación y ERP no forman parte de este módulo.
+### Paso 12 — Orden de venta para el ERP (opt-in de la sede)
 
-Si el módulo está apagado, la operativa mínima (agenda + caso) no cambia. El dueño de plataforma y el admin de red no leen el contenido del historial.
+SURC **no factura**. Desde un **registro clínico final** de la sede dueña del historial se puede preparar una **orden de venta interna** (PDF + CSV genérico UTF-8) para facturar después en el ERP.
+
+1. El admin de clínica carga el **catálogo de venta** de su sede (código ERP, producto/servicio, precio, impuesto informativo, moneda ISO). Ninguna sede ve precios de otra. El operador usa ítems activos; no cambia el maestro.
+2. En la ficha de la sede: **Datos comerciales** (moneda, p. ej. `UYU`, prefijo `OV`, razón social). No reutiliza la moneda de las señas.
+3. En un registro **final**, **Orden de venta**. Se sugiere el catálogo ligado a ese tipo clínico; se pueden agregar líneas manuales. No copia diagnóstico, tratamiento, resumen ni adjuntos. Si el registro viene de un caso con seña confirmada, la seña aparece como **referencia informativa**, no como producto.
+4. Borrador editable; **Emitir** asigna número correlativo (`OV-000001`) y deja la orden inmutable. Una sola orden activa por registro (idempotente). Tras anular un borrador se puede armar otra.
+5. **PDF** (sin historia clínica) y **CSV** (una fila por línea, identificador estable `order_uid`). Cada descarga se audita. El CSV no se guarda en disco. Campo **Referencia ERP** para anotar luego el número del facturador.
+
+La orden pertenece a la **sede del historial**, aunque el caso se haya atendido en una agenda abierta de otra clínica. Anfitriona, especialista, admin de red y dueño de plataforma no la abren. Agenda, workflow y señas no cambian.
+
+Si el módulo de historial está apagado, la operativa mínima (agenda + caso) no cambia. El dueño de plataforma y el admin de red no leen el contenido del historial ni las órdenes clínicas.
 
 ---
 

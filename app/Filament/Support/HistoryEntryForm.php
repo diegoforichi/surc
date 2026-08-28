@@ -31,8 +31,8 @@ class HistoryEntryForm
                 )
                 ->required()
                 ->live()
-                ->afterStateUpdated(function (Set $set): void {
-                    $set('payload', []);
+                ->afterStateUpdated(function (Set $set, $state) use ($subject): void {
+                    $set('payload', self::reusablePayload($subject, $state ? (int) $state : null));
                 }),
             Forms\Components\DateTimePicker::make('occurred_at')
                 ->label('Fecha')
@@ -40,7 +40,7 @@ class HistoryEntryForm
                 ->required(),
             Forms\Components\Textarea::make('summary')
                 ->label('Resumen')
-                ->required()
+                ->helperText('Si lo deja vacío, al finalizar se propone desde hallazgos, producto o resultados.')
                 ->columnSpanFull(),
             Forms\Components\Grid::make(2)
                 ->schema(function (Get $get) use ($subject): array {
@@ -55,7 +55,7 @@ class HistoryEntryForm
         ];
 
         if ($includeUploads) {
-            $fields[] =             Forms\Components\FileUpload::make('attachment_files')
+            $fields[] = Forms\Components\FileUpload::make('attachment_files')
                 ->label('Adjuntos')
                 ->multiple()
                 ->disk('local')
@@ -147,5 +147,30 @@ class HistoryEntryForm
             ->columnSpanFull();
 
         return $fields;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function reusablePayload(Subject $subject, ?int $typeId): array
+    {
+        if ($typeId === null) {
+            return [];
+        }
+
+        $last = $subject->historyEntries()
+            ->where('history_entry_type_id', $typeId)
+            ->where('status', SubjectHistoryEntry::STATUS_FINAL)
+            ->whereNull('addendum_of_id')
+            ->orderByDesc('occurred_at')
+            ->first();
+
+        if ($last === null) {
+            return [];
+        }
+
+        $last->loadMissing('type');
+
+        return HistoryFieldSchema::reusableValues($last->type?->field_schema, $last->payload);
     }
 }

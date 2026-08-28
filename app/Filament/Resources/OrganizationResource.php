@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use App\Filament\Concerns\ScopesToUserNetwork;
 use App\Filament\Resources\OrganizationResource\Pages;
 use App\Filament\Support\PublicImageUpload;
-use App\Models\Network;
 use App\Models\Organization;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -92,6 +91,26 @@ class OrganizationResource extends Resource
                 ->label('Usar '.terminology('history', 'historial'))
                 ->helperText('Solo aplica si la red tiene el módulo habilitado.')
                 ->default(false),
+            Forms\Components\Fieldset::make('Datos comerciales (órdenes de venta)')
+                ->visible(fn (): bool => auth()->user()?->isOrganizationAdmin() ?? false)
+                ->schema([
+                    Forms\Components\TextInput::make('settings.sales.currency')
+                        ->label('Moneda ISO')
+                        ->maxLength(3)
+                        ->default('UYU')
+                        ->helperText('No usa la moneda de las señas. En Uruguay: UYU.'),
+                    Forms\Components\TextInput::make('settings.sales.order_prefix')
+                        ->label('Prefijo de orden')
+                        ->default('OV')
+                        ->maxLength(8),
+                    Forms\Components\TextInput::make('settings.sales.issuer_name')
+                        ->label('Razón social / emisor'),
+                    Forms\Components\TextInput::make('settings.sales.issuer_document')
+                        ->label('Documento del emisor'),
+                    Forms\Components\TextInput::make('settings.sales.issuer_address')
+                        ->label('Domicilio comercial')
+                        ->columnSpanFull(),
+                ]),
         ]);
     }
 

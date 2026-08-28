@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Support\Contact\WhatsappLink;
 use App\Support\Tenancy\BelongsToNetwork;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Organization extends Model
@@ -52,6 +51,16 @@ class Organization extends Model
     public function cases(): HasMany
     {
         return $this->hasMany(CaseRecord::class);
+    }
+
+    public function salesCatalogItems(): HasMany
+    {
+        return $this->hasMany(SalesCatalogItem::class);
+    }
+
+    public function salesOrders(): HasMany
+    {
+        return $this->hasMany(SalesOrder::class);
     }
 
     public function whatsappUrl(): ?string

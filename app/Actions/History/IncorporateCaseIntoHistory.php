@@ -9,6 +9,7 @@ use App\Models\HistoryEntryType;
 use App\Models\SubjectHistoryEntry;
 use App\Models\User;
 use App\Support\History\HistoryAccess;
+use App\Support\History\HistoryAudit;
 use Illuminate\Validation\ValidationException;
 
 class IncorporateCaseIntoHistory
@@ -89,6 +90,14 @@ class IncorporateCaseIntoHistory
                 'shared_at' => now(),
             ],
         );
+
+        HistoryAudit::log('history_entry_created', $entry, [
+            'subject_id' => $entry->subject_id,
+            'organization_id' => $entry->organization_id,
+            'entry_id' => $entry->id,
+            'source' => 'case',
+            'case_id' => $case->id,
+        ]);
 
         return $entry;
     }

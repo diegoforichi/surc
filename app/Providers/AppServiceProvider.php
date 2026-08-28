@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Gate::before(function (User $user, string $ability): ?bool {
-            if (str_starts_with($ability, 'history.')) {
+            if (str_starts_with($ability, 'history.') || str_starts_with($ability, 'sales.')) {
                 return null;
             }
 

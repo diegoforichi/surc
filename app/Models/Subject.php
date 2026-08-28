@@ -49,6 +49,9 @@ class Subject extends Model implements HasMedia
 
     public function historyEntries(): HasMany
     {
-        return $this->hasMany(SubjectHistoryEntry::class)->orderByDesc('occurred_at');
+        return $this->hasMany(SubjectHistoryEntry::class)
+            ->where('network_id', $this->network_id)
+            ->where('organization_id', $this->organization_id)
+            ->orderByDesc('occurred_at');
     }
 }

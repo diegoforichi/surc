@@ -6,6 +6,8 @@ use App\Support\Tenancy\BelongsToNetwork;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
+use Illuminate\Validation\ValidationException;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -33,6 +35,7 @@ class SubjectHistoryEntry extends Model implements HasMedia
         'addendum_of_id',
         'finalized_by',
         'finalized_at',
+        'next_due_at',
     ];
 
     protected function casts(): array
@@ -41,12 +44,8 @@ class SubjectHistoryEntry extends Model implements HasMedia
             'payload' => 'array',
             'occurred_at' => 'datetime',
             'finalized_at' => 'datetime',
+            'next_due_at' => 'datetime',
         ];
-    }
-
-    public function registerMediaCollections(): void
-    {
-        $this->addMediaCollection('attachments')->useDisk('local');
     }
 
     public function isFinal(): bool
@@ -54,14 +53,20 @@ class SubjectHistoryEntry extends Model implements HasMedia
         return $this->status === self::STATUS_FINAL;
     }
 
-    public function organization(): BelongsTo
+    public function registerMediaCollections(): void
     {
-        return $this->belongsTo(Organization::class);
+        $this->addMediaCollection('attachments')
+            ->useDisk('local');
     }
 
     public function subject(): BelongsTo
     {
         return $this->belongsTo(Subject::class);
+    }
+
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class);
     }
 
     public function type(): BelongsTo
@@ -84,7 +89,7 @@ class SubjectHistoryEntry extends Model implements HasMedia
         return $this->belongsTo(CaseRecord::class, 'source_case_id');
     }
 
-    public function addendumOf(): BelongsTo
+    public function parentEntry(): BelongsTo
     {
         return $this->belongsTo(self::class, 'addendum_of_id');
     }
@@ -99,27 +104,54 @@ class SubjectHistoryEntry extends Model implements HasMedia
         return $this->hasMany(CaseHistoryShare::class);
     }
 
+    public function salesOrders(): HasMany
+    {
+        return $this->hasMany(SalesOrder::class);
+    }
+
+    public function activeSalesOrder(): ?SalesOrder
+    {
+        return $this->salesOrders
+            ->first(fn (SalesOrder $order): bool => $order->isActive());
+    }
+
+    public static function nextDueFromPayload(mixed $payload): ?Carbon
+    {
+        $raw = is_array($payload) ? ($payload['next_due'] ?? null) : null;
+
+        if (! is_string($raw) && ! $raw instanceof Carbon) {
+            return null;
+        }
+
+        try {
+            $due = $raw instanceof Carbon ? $raw : Carbon::parse($raw);
+        } catch (\Throwable) {
+            return null;
+        }
+
+        return $due;
+    }
+
     protected static function booted(): void
     {
+        static::saving(function (self $entry): void {
+            $entry->next_due_at = self::nextDueFromPayload($entry->payload);
+        });
+
         static::updating(function (self $entry): void {
             if (! $entry->getOriginal('status') || $entry->getOriginal('status') !== self::STATUS_FINAL) {
                 return;
             }
 
-            $allowed = ['updated_at'];
-            $dirty = array_keys($entry->getDirty());
-
-            if (array_diff($dirty, $allowed) !== []) {
-                throw \Illuminate\Validation\ValidationException::withMessages([
-                    'status' => 'Los registros finalizados son inmutables. Use una adenda.',
-                ]);
-            }
+            throw ValidationException::withMessages([
+                'status' => 'Un registro finalizado no se puede editar. Use una adenda.',
+            ]);
         });
 
         static::deleting(function (self $entry): void {
             if ($entry->isFinal()) {
-                throw \Illuminate\Validation\ValidationException::withMessages([
-                    'status' => 'No se pueden eliminar registros finalizados.',
+                throw ValidationException::withMessages([
+                    'status' => 'Un registro finalizado no se puede eliminar.',
                 ]);
             }
         });

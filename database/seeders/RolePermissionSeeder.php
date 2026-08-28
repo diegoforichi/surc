@@ -25,6 +25,9 @@ class RolePermissionSeeder extends Seeder
             'history.finalize',
             'history.share',
             'history.print',
+            'sales.catalog.manage',
+            'sales.orders.manage',
+            'sales.orders.export',
         ];
 
         foreach ($permissions as $permission) {
@@ -68,6 +71,9 @@ class RolePermissionSeeder extends Seeder
                 'history.finalize',
                 'history.share',
                 'history.print',
+                'sales.catalog.manage',
+                'sales.orders.manage',
+                'sales.orders.export',
             ]);
 
         Role::firstOrCreate(['name' => 'operator'])
@@ -79,6 +85,8 @@ class RolePermissionSeeder extends Seeder
                 'history.finalize',
                 'history.share',
                 'history.print',
+                'sales.orders.manage',
+                'sales.orders.export',
             ]);
 
         Role::firstOrCreate(['name' => 'specialist'])

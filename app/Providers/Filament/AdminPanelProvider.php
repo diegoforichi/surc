@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Widgets\AgendasPendientesWidget;
 use App\Filament\Widgets\CasosDelDiaWidget;
+use App\Filament\Widgets\UpcomingHistoryRemindersWidget;
 use App\Http\Middleware\SetNetworkContext;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -45,6 +46,7 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 AgendasPendientesWidget::class,
                 CasosDelDiaWidget::class,
+                UpcomingHistoryRemindersWidget::class,
                 Widgets\AccountWidget::class,
             ])
             ->middleware([

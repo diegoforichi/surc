@@ -5,6 +5,7 @@ use App\Http\Controllers\HelpGuideController;
 use App\Http\Controllers\HistoryAttachmentController;
 use App\Http\Controllers\HistoryReportController;
 use App\Http\Controllers\PublicSiteController;
+use App\Http\Controllers\SalesOrderReportController;
 use App\Http\Controllers\TicketController;
 use App\Livewire\CaseWorkspace;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,8 @@ Route::middleware(['auth', 'network.context'])->group(function (): void {
     Route::get('/history-entries/{entry}/attachments/{media}', [HistoryAttachmentController::class, 'show'])->name('history.attachments.show');
     Route::get('/history-entries/{entry}/pdf', [HistoryReportController::class, 'entry'])->name('history.entries.pdf');
     Route::get('/subjects/{subject}/history.pdf', [HistoryReportController::class, 'subject'])->name('history.subjects.pdf');
+    Route::get('/sales-orders/{order}/pdf', [SalesOrderReportController::class, 'pdf'])->name('sales.orders.pdf');
+    Route::get('/sales-orders/{order}/csv', [SalesOrderReportController::class, 'csv'])->name('sales.orders.csv');
     Route::get('/capacitacion/{article}/pdf', [HelpGuideController::class, 'pdf'])->name('help.articles.pdf');
 });
 

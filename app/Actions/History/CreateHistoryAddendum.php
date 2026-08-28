@@ -5,6 +5,7 @@ namespace App\Actions\History;
 use App\Models\SubjectHistoryEntry;
 use App\Models\User;
 use App\Support\History\HistoryAccess;
+use App\Support\History\HistoryAudit;
 use Illuminate\Validation\ValidationException;
 
 class CreateHistoryAddendum
@@ -21,7 +22,7 @@ class CreateHistoryAddendum
             ]);
         }
 
-        return SubjectHistoryEntry::create([
+        $addendum = SubjectHistoryEntry::create([
             'network_id' => $entry->network_id,
             'organization_id' => $entry->organization_id,
             'subject_id' => $entry->subject_id,
@@ -35,5 +36,14 @@ class CreateHistoryAddendum
             'finalized_by' => $user->id,
             'finalized_at' => now(),
         ]);
+
+        HistoryAudit::log('history_addendum_created', $addendum, [
+            'subject_id' => $entry->subject_id,
+            'organization_id' => $entry->organization_id,
+            'entry_id' => $entry->id,
+            'addendum_id' => $addendum->id,
+        ]);
+
+        return $addendum;
     }
 }

@@ -51,4 +51,20 @@ class HistoryFieldSchemaTest extends TestCase
         $this->assertSame('Sí', $pairs[0]['value']);
         $this->assertSame('a, b', $pairs[1]['value']);
     }
+
+    public function test_it_detects_missing_required_fields_and_proposes_summary(): void
+    {
+        $schema = [
+            ['key' => 'findings', 'label' => 'Hallazgos', 'type' => 'textarea', 'required' => true],
+            ['key' => 'weight', 'label' => 'Peso', 'type' => 'number'],
+        ];
+
+        $this->assertSame(['Hallazgos'], HistoryFieldSchema::missingRequired($schema, ['weight' => 12]));
+        $this->assertSame([], HistoryFieldSchema::missingRequired($schema, ['findings' => 'Otitis']));
+        $this->assertSame('Otitis', HistoryFieldSchema::proposedSummary($schema, ['findings' => 'Otitis']));
+        $this->assertSame(['weight' => 12], HistoryFieldSchema::reusableValues($schema, [
+            'weight' => 12,
+            'findings' => 'Otitis',
+        ]));
+    }
 }

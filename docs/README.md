@@ -46,7 +46,8 @@ Comportamiento vigente en código, no el deseado de versiones anteriores:
 - La **constancia 80 mm** se emite al inscribir un caso en una agenda (orden, indicaciones, consentimiento, firma en papel).
 - El **sitio institucional** vive en `/red/{slug}` con home resumida (slogan, descripción y contacto de la **red**) y páginas `/sedes`, `/especialistas`, `/blog`, `/ayuda`. El WhatsApp de la portada es solo el de la red. No hay turnos online. El admin de red lo edita en **Sitio público → Datos institucionales**.
 - La **capacitación interna** vive en el panel (**Ayuda → Capacitación**): es global, la publica el dueño de plataforma, se filtra por rol y **adapta los nombres a la red** (tokens de terminología). Cada artículo se puede descargar en PDF autenticado. No va al sitio público.
-- El **historial longitudinal** es opt-in por red y por sede: cuaderno interno del sujeto, campos por tipo, adjuntos privados, PDF auditado de un registro o de la ficha completa, y compartir con un caso solo si se elige. El admin de red configura el módulo y no lee el contenido. Un usuario con sede fija no puede crear registros en otra clínica. No forma parte del flujo mínimo ni de la facturación.
+- El **historial longitudinal** es opt-in por red y por sede: ficha con timeline, campos por tipo, adjuntos privados, PDF auditado de un registro o de la ficha completa, y compartir con un caso solo si se elige. El admin de red configura el módulo y no lee el contenido. Un usuario con sede fija no puede crear registros en otra clínica. No forma parte del flujo mínimo.
+- La **orden de venta** es interna (PDF + CSV) para facturar después en el ERP. Nace de un registro clínico final de esa clínica; SURC no factura.
 - El **operador** confirma señas (`payments.confirm`); el especialista no.
 
 Si el código y este índice divergen, prevalece el código y hay que actualizar estos archivos juntos (`presentacion.html` incluido: regla `.cursor/rules/docs-presentacion-sync.mdc`).

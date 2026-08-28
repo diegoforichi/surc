@@ -4,15 +4,17 @@ namespace App\Filament\Resources\SubjectResource\RelationManagers;
 
 use App\Actions\History\CreateHistoryAddendum;
 use App\Actions\History\FinalizeHistoryEntry;
+use App\Actions\History\PersistHistoryEntry;
 use App\Actions\History\ShareHistoryEntry;
+use App\Actions\Sales\PrepareSalesOrderFromHistory;
+use App\Filament\Resources\SalesOrderResource;
 use App\Filament\Support\HistoryEntryForm;
 use App\Models\CaseRecord;
 use App\Models\HistoryEntryType;
 use App\Models\Subject;
 use App\Models\SubjectHistoryEntry;
 use App\Support\History\HistoryAccess;
-use App\Support\History\HistoryAttachments;
-use App\Support\History\HistoryFieldSchema;
+use App\Support\Sales\SalesAccess;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -62,6 +64,8 @@ class HistoryEntriesRelationManager extends RelationManager
             ->modelLabel(terminology('history_entry', 'Registro'))
             ->pluralModelLabel(terminology('history_entry', 'Registros'))
             ->modifyQueryUsing(fn (Builder $query) => $query
+                ->where('network_id', $owner->network_id)
+                ->where('organization_id', $owner->organization_id)
                 ->whereNull('addendum_of_id')
                 ->with(['shares.case', 'type', 'author', 'addenda', 'media']))
             ->defaultSort('occurred_at', 'desc')
@@ -160,6 +164,29 @@ class HistoryEntriesRelationManager extends RelationManager
                     ->url(fn (SubjectHistoryEntry $record): string => route('history.entries.pdf', $record))
                     ->openUrlInNewTab()
                     ->visible(fn (SubjectHistoryEntry $record): bool => HistoryAccess::canPrintEntry(auth()->user(), $record)),
+                Tables\Actions\Action::make('salesOrder')
+                    ->label('Orden de venta')
+                    ->visible(fn (SubjectHistoryEntry $record): bool => $record->isFinal()
+                        && $record->addendum_of_id === null
+                        && SalesAccess::canManageOrders(auth()->user(), $owner)
+                        && HistoryAccess::canViewEntry(auth()->user(), $record))
+                    ->action(function (SubjectHistoryEntry $record) {
+                        try {
+                            $order = app(PrepareSalesOrderFromHistory::class)->handle($record, auth()->user());
+                        } catch (ValidationException $exception) {
+                            Notification::make()
+                                ->title(collect($exception->errors())->flatten()->first() ?: 'No se pudo preparar la orden')
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+
+                        return redirect()->to(SalesOrderResource::getUrl(
+                            $order->isDraft() ? 'edit' : 'view',
+                            ['record' => $order],
+                        ));
+                    }),
                 Tables\Actions\DeleteAction::make()
                     ->label('Eliminar borrador')
                     ->modalHeading('Eliminar borrador')
@@ -215,25 +242,7 @@ class HistoryEntriesRelationManager extends RelationManager
     {
         /** @var Subject $owner */
         $owner = $this->getOwnerRecord();
-        $files = $data['attachment_files'] ?? [];
-        unset($data['attachment_files']);
 
-        $type = HistoryEntryType::query()->find($data['history_entry_type_id'] ?? $record?->history_entry_type_id);
-        $data['payload'] = HistoryFieldSchema::extractPayload($type?->field_schema, $data['payload'] ?? []);
-
-        if ($record === null) {
-            $data['network_id'] = $owner->network_id;
-            $data['organization_id'] = $owner->organization_id;
-            $data['subject_id'] = $owner->id;
-            $data['status'] = SubjectHistoryEntry::STATUS_DRAFT;
-            $data['author_user_id'] = auth()->id();
-            $record = SubjectHistoryEntry::create($data);
-        } else {
-            $record->update($data);
-        }
-
-        HistoryAttachments::attachFromUploads($record, $files);
-
-        return $record->fresh() ?? $record;
+        return app(PersistHistoryEntry::class)->handle($owner, auth()->user(), $data, $record);
     }
 }

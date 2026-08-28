@@ -7,6 +7,7 @@ use App\Models\CaseRecord;
 use App\Models\SubjectHistoryEntry;
 use App\Models\User;
 use App\Support\History\HistoryAccess;
+use App\Support\History\HistoryAudit;
 use Illuminate\Validation\ValidationException;
 
 class ShareHistoryEntry
@@ -29,7 +30,7 @@ class ShareHistoryEntry
             abort(403, 'No tiene permiso para compartir este registro.');
         }
 
-        return CaseHistoryShare::query()->firstOrCreate(
+        $share = CaseHistoryShare::query()->firstOrCreate(
             [
                 'case_id' => $case->id,
                 'subject_history_entry_id' => $entry->id,
@@ -39,5 +40,16 @@ class ShareHistoryEntry
                 'shared_at' => now(),
             ],
         );
+
+        if ($share->wasRecentlyCreated) {
+            HistoryAudit::log('history_entry_shared', $entry, [
+                'subject_id' => $entry->subject_id,
+                'organization_id' => $entry->organization_id,
+                'entry_id' => $entry->id,
+                'case_id' => $case->id,
+            ]);
+        }
+
+        return $share;
     }
 }

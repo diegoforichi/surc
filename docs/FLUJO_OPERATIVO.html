@@ -38,8 +38,8 @@
     <tr><th>Rol</th><th>Permiso clave</th><th>Crea/edita operativa</th><th>Alcance</th></tr>
     <tr><td>Dueño plataforma</td><td>todos</td><td>Sí</td><td>Toda la plataforma</td></tr>
     <tr><td>Admin de red</td><td><code>cases.manage</code> / <code>config.manage</code></td><td>Sí (operativa). No el historial interno</td><td>Toda su red. Configura el módulo; no lee el cuaderno</td></tr>
-    <tr><td>Admin de clínica</td><td><code>cases.manage</code> + <code>history.*</code></td><td>Sí</td><td>Su sede. Opera casos derivados a una agenda suya; no lee el cuaderno ajeno</td></tr>
-    <tr><td>Operador</td><td><code>cases.operate</code> + <code>history.*</code></td><td>No (sí ve listados, workspace e historial)</td><td>Su sede y casos en agendas de su sede</td></tr>
+    <tr><td>Admin de clínica</td><td><code>cases.manage</code> + <code>history.*</code> + catálogo/órdenes</td><td>Sí</td><td>Su sede. Opera casos derivados a una agenda suya; no lee el cuaderno ni las órdenes ajenas</td></tr>
+    <tr><td>Operador</td><td><code>cases.operate</code> + <code>history.*</code> + <code>sales.orders.*</code></td><td>No (sí ve listados, workspace, historial y órdenes)</td><td>Su sede y casos en agendas de su sede</td></tr>
     <tr><td>Especialista</td><td><code>cases.operate</code></td><td>No</td><td>Agendas donde es el especialista vinculado. No confirma pagos.</td></tr>
   </table>
   <p>Usuarios con sede asignada (no dueño ni admin de red): formularios traen la sede preseleccionada. Sujetos y actores se listan solo de esa sede. Agendas: las propias y las <strong>abiertas a la red</strong>. Casos: los propios y los que están en una agenda de su sede.</p>
@@ -153,10 +153,13 @@
     <li>Workspace: seña → checklist → ficha → finalizar consulta.</li>
     <li>Admin confirma agenda cuando conviene (según modo).</li>
     <li>Caso cerrado; agenda puede pasar a Realizada sola.</li>
-    <li>Si el historial está activo: en la ficha del sujeto, pestaña <strong>Historial</strong> (cuaderno) distinta de <strong>Casos asociados</strong>. PDF de un registro final o de la ficha completa (solo finales). Compartir con un caso es opt-in.</li>
+    <li>Si el historial está activo: en la ficha del sujeto, abrir <strong>Historial</strong> (timeline, no solo la pestaña de respaldo). PDF de un registro final o de la ficha completa (carátula + próximos). Compartir con un caso es opt-in. Desde un registro final, orden de venta de <strong>esa</strong> sede para el ERP (PDF/CSV); no es factura.</li>
   </ol>
 
   <h2>11. Historial interno (opt-in)</h2>
-  <p>Doble interruptor: red y sede. El admin de red habilita tipos y flags; el cuaderno lo operan admin de sede y operador. Dueño de plataforma y admin de red no leen el contenido. Las adendas no aparecen como filas principales. Los PDF A4 listan nombres de adjuntos, no incrustan archivos. Cada descarga queda auditada.</p>
+  <p>Doble interruptor: red y sede. El admin de red habilita tipos y flags; el cuaderno lo operan admin de sede y operador. Dueño de plataforma y admin de red no leen el contenido. Las adendas no aparecen como filas principales. Los PDF A4 listan nombres de adjuntos, no incrustan archivos. Cada descarga queda auditada. Widget de próximos controles: solo finales de la sede.</p>
+
+  <h2>12. Orden de venta (ERP)</h2>
+  <p>Catálogo y moneda propios de cada clínica. La orden nace de un registro clínico final, queda numerada al emitir y se exporta en CSV genérico. La seña no es una línea. La anfitriona de una agenda abierta no abre la orden de origen. SURC no factura.</p>
 </body>
 </html>

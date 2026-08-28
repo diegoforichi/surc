@@ -164,6 +164,7 @@ class SubjectResource extends Resource
             'index' => Pages\ListSubjects::route('/'),
             'create' => Pages\CreateSubject::route('/create'),
             'view' => Pages\ViewSubject::route('/{record}'),
+            'history' => Pages\ViewSubjectHistory::route('/{record}/history'),
             'edit' => Pages\EditSubject::route('/{record}/edit'),
         ];
     }

@@ -301,12 +301,12 @@
             <tr>
               <td>organization_admin</td>
               <td>Red (usuarios), Operativa</td>
-              <td>Crear usuarios de la clínica (sede fija), casos, agenda e historial interno de la sede.</td>
+              <td>Crear usuarios de la clínica (sede fija), casos, agenda, historial interno y catálogo/órdenes de venta de la sede.</td>
             </tr>
             <tr>
               <td>operator</td>
               <td>Dashboard, Agenda, Casos (listados), Capacitación. Con historial activo: ficha del sujeto en lectura</td>
-              <td>Espacio de trabajo (registrar y confirmar seña, etapas, cierre). Carga el cuaderno interno. No crea ni edita agendas/casos/sujetos.</td>
+              <td>Espacio de trabajo (registrar y confirmar seña, etapas, cierre). Carga el cuaderno interno y puede emitir órdenes de su sede. No crea ni edita agendas/casos/sujetos ni el catálogo.</td>
             </tr>
             <tr>
               <td>specialist</td>
@@ -394,7 +394,7 @@
             <ul>
               <li><strong>Actores</strong> — propietarios, especialistas, profesionales.</li>
               <li><strong>Agenda</strong> — visita en una sede y fecha. Casilla <em>Abierta a la red</em> para recibir derivaciones de otras clínicas.</li>
-              <li><strong>Animal</strong> — sujetos de la sede; con historia clínica activa, cuaderno interno (pestaña distinta de casos asociados). El admin de red no lo lee.</li>
+              <li><strong>Animal</strong> — sujetos de la sede; con historia clínica activa, ficha interna (timeline, distinta de casos asociados). Desde un registro final se emite orden de venta de esa clínica. El admin de red no lee cuaderno ni órdenes.</li>
               <li><strong>Derivación</strong> — casos / turnos con flujo por etapas.</li>
             </ul>
           </div>
@@ -409,7 +409,7 @@
           <li>Validar sede fija en formularios (un usuario de clínica no puede alta en otra sede).</li>
           <li><strong>Red → Usuarios → Crear</strong> — mostrar alta de operador o especialista.</li>
           <li><strong>Operativa → Actores</strong> — propietario y especialista (vincular usuario si aplica).</li>
-          <li><strong>Operativa → Animal</strong> — mascota; el propietario se puede crear en el mismo formulario (documento evita duplicar en esa clínica). Código automático. Si el historial está activo, entrar con cuenta de sede: registro interno, PDF de ficha y compartir con la derivación opt-in. El admin de red no lee el cuaderno.</li>
+          <li><strong>Operativa → Animal</strong> — mascota; el propietario se puede crear en el mismo formulario (documento evita duplicar en esa clínica). Código automático. Si el historial está activo, entrar con cuenta de sede: ficha con timeline, PDF y compartir con la derivación opt-in. Desde un registro final, orden de venta (CSV/PDF) para el ERP; no es factura. El admin de red no lee el cuaderno ni las órdenes.</li>
           <li><strong>Operativa → Derivación</strong> — crear caso; elegir plantilla (queda fija); al elegir agenda, sugiere plantilla/hora/sede si están vacías.</li>
           <li><strong>Operativa → Agenda</strong> — alternativa: crear visita y asignar casos con hora sugerida.</li>
           <li>Abrir <strong>Espacio de trabajo</strong> — recorrer etapas (seña, confirmación, ficha, consulta). El operador confirma la seña.</li>

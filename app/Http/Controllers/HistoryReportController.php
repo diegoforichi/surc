@@ -8,6 +8,7 @@ use App\Support\History\HistoryAccess;
 use App\Support\History\HistoryDocuments;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Response;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class HistoryReportController extends Controller
@@ -54,13 +55,16 @@ class HistoryReportController extends Controller
             subject: $subject,
             entries: $entries,
             title: 'Ficha de '.terminology('history', 'historial'),
-        ))->setPaper('a4', 'portrait');
+        ) + [
+            'lastWeight' => HistoryDocuments::latestWeight($subject),
+            'upcoming' => HistoryDocuments::upcomingEvents($subject, 8),
+        ])->setPaper('a4', 'portrait');
 
         return $pdf->stream("ficha-historial-{$subject->id}.pdf");
     }
 
     /**
-     * @param  \Illuminate\Support\Collection<int, SubjectHistoryEntry>  $entries
+     * @param  Collection<int, SubjectHistoryEntry>  $entries
      * @return array<string, mixed>
      */
     protected function viewData(Subject $subject, $entries, string $title): array

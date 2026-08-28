@@ -35,7 +35,6 @@ class HistoryFieldSchema
     }
 
     /**
-     * @param  mixed  $schema
      * @return list<array{key: string, label: string, type: string, required: bool, options: list<string>}>
      */
     public static function normalize(mixed $schema): array
@@ -89,7 +88,6 @@ class HistoryFieldSchema
     }
 
     /**
-     * @param  mixed  $schema
      * @return array<int, Component>
      */
     public static function formFields(mixed $schema): array
@@ -100,8 +98,6 @@ class HistoryFieldSchema
     }
 
     /**
-     * @param  mixed  $schema
-     * @param  mixed  $payload
      * @return array<string, mixed>
      */
     public static function extractPayload(mixed $schema, mixed $payload): array
@@ -123,8 +119,88 @@ class HistoryFieldSchema
     }
 
     /**
-     * @param  mixed  $schema
-     * @param  mixed  $payload
+     * @return list<string>
+     */
+    public static function missingRequired(mixed $schema, mixed $payload): array
+    {
+        $values = is_array($payload) ? $payload : [];
+        $missing = [];
+
+        foreach (self::normalize($schema) as $field) {
+            if (! $field['required']) {
+                continue;
+            }
+
+            if (! self::isFilled($values[$field['key']] ?? null)) {
+                $missing[] = $field['label'];
+            }
+        }
+
+        return $missing;
+    }
+
+    public static function proposedSummary(mixed $schema, mixed $payload): ?string
+    {
+        $values = is_array($payload) ? $payload : [];
+        $preferred = ['findings', 'product', 'results', 'notes', 'treatment'];
+
+        foreach ($preferred as $key) {
+            $raw = $values[$key] ?? null;
+
+            if (is_string($raw) && trim($raw) !== '') {
+                return mb_substr(trim($raw), 0, 180);
+            }
+        }
+
+        foreach (self::normalize($schema) as $field) {
+            if (in_array($field['type'], ['textarea', 'text'], true)) {
+                $raw = $values[$field['key']] ?? null;
+
+                if (is_string($raw) && trim($raw) !== '') {
+                    return mb_substr(trim($raw), 0, 180);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function reusableValues(mixed $schema, mixed $payload): array
+    {
+        $values = is_array($payload) ? $payload : [];
+        $reuseKeys = ['weight', 'temperature', 'product'];
+        $reused = [];
+
+        foreach (self::normalize($schema) as $field) {
+            $key = $field['key'];
+
+            if (! in_array($key, $reuseKeys, true) || ! array_key_exists($key, $values)) {
+                continue;
+            }
+
+            $reused[$key] = $values[$key];
+        }
+
+        return $reused;
+    }
+
+    public static function isFilled(mixed $value): bool
+    {
+        if ($value === null || $value === '') {
+            return false;
+        }
+
+        if (is_array($value)) {
+            return array_filter($value, fn ($item) => $item !== null && $item !== '') !== [];
+        }
+
+        return true;
+    }
+
+    /**
      * @return list<array{label: string, value: string}>
      */
     public static function displayPairs(mixed $schema, mixed $payload): array
@@ -183,6 +259,6 @@ class HistoryFieldSchema
 
         return $component
             ->label($field['label'])
-            ->required($field['required']);
+            ->helperText($field['required'] ? 'Obligatorio al finalizar.' : null);
     }
 }

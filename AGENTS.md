@@ -79,6 +79,7 @@ PHPUnit, no Pest. `php artisan test --compact` con filtro mínimo; suite complet
 - Case workflow: `InitializeCaseWorkflow` must respect `workflow_template_id` already set on the case; fall back to network default only if blank. Do not overwrite the chosen template.
 - Case template field is locked on edit in Filament (`disabled` + `dehydrated`).
 - Agenda labels: `Agenda::optionLabel()`. Suggested slot: `Agenda::suggestedScheduledAtForNextCase()`.
-- Historial interno: opt-in red+sede. `network_admin` configura (`config.manage`) y **no** lee el cuaderno (`HistoryAccess` bloquea el rol). Operan `organization_admin` y `operator`. PDFs A4 de registro final y ficha completa vía `history.print`, auditados. Compartir con un caso es opt-in y no entrega adjuntos.
+- Historial interno: opt-in red+sede. `network_admin` configura (`config.manage`) y **no** lee el cuaderno (`HistoryAccess` bloquea el rol). Operan `organization_admin` y `operator`. Ficha `/{record}/history` (timeline). PDFs A4 de registro final y ficha completa vía `history.print`, auditados. Compartir con un caso es opt-in y no entrega adjuntos.
+- Órdenes de venta: catálogo y moneda por clínica. Nacen de un registro clínico **final** de la sede dueña del historial (`SalesAccess`). Admin de clínica administra catálogo; admin y operador emiten/exportan. Especialista, anfitriona, admin de red y platform owner no leen órdenes. CSV/PDF internos; SURC no factura ni habla con el ERP por API. La seña no es línea de venta.
 
 </laravel-boost-guidelines>
