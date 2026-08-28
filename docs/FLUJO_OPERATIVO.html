@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>SURC — Flujo operativo actual</title>
+  <style>
+    body { font-family: DejaVu Sans, Segoe UI, sans-serif; font-size: 11pt; color: #1a1a1a; line-height: 1.45; margin: 24px; }
+    h1 { font-size: 18pt; margin: 0 0 6px; }
+    h2 { font-size: 13pt; margin: 22px 0 8px; border-bottom: 1px solid #dde1e6; padding-bottom: 4px; }
+    h3 { font-size: 11.5pt; margin: 16px 0 6px; }
+    p, li { margin: 0 0 8px; }
+    .muted { color: #5c6370; font-size: 9.5pt; }
+    table { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin: 8px 0 14px; }
+    th, td { text-align: left; padding: 5px 7px; border-bottom: 1px solid #dde1e6; vertical-align: top; }
+    th { background: #f4f6f8; font-size: 8.5pt; text-transform: uppercase; letter-spacing: .03em; color: #5c6370; }
+    code { font-family: DejaVu Sans Mono, Consolas, monospace; font-size: 9pt; background: #f4f6f8; padding: 0 3px; }
+    .box { background: #e8f2f1; border-left: 3px solid #0d5c56; padding: 8px 10px; margin: 10px 0; font-size: 9.5pt; }
+    ol { padding-left: 18px; }
+    ul { padding-left: 18px; }
+  </style>
+</head>
+<body>
+  <h1>SURC — Flujo operativo actual</h1>
+  <p class="muted">Campos, etapas y permisos según el código vigente. Agosto 2026. Los nombres de menú cambian con la plantilla de industria (ejemplo veterinario: Clínica, Animal, Derivación).</p>
+  <p class="muted">Documentos hermanos: <code>docs/README.md</code>, <code>docs/MANUAL_USO.md</code>, <code>docs/MANUAL_CONFIGURACION.md</code>, <code>presentacion.html</code>.</p>
+
+  <h2>1. Qué hace SURC</h2>
+  <p>Plataforma multi-red para gestionar casos (derivaciones / turnos) agrupados en agendas, con un flujo de etapas configurable por plantilla.</p>
+  <ol>
+    <li><strong>Configuración</strong> — sedes, usuarios, actores, sujetos, plantillas.</li>
+    <li><strong>Planificación</strong> — crear agendas y casos; asignar hora estimada.</li>
+    <li><strong>Operación</strong> — espacio de trabajo <code>/cases/{id}</code>, etapa por etapa.</li>
+    <li><strong>Cierre</strong> — etapa terminal cierra el caso; la agenda puede pasar a Realizada.</li>
+  </ol>
+
+  <h2>2. Roles y alcance</h2>
+  <table>
+    <tr><th>Rol</th><th>Permiso clave</th><th>Crea/edita operativa</th><th>Alcance</th></tr>
+    <tr><td>Dueño plataforma</td><td>todos</td><td>Sí</td><td>Toda la plataforma</td></tr>
+    <tr><td>Admin de red</td><td><code>cases.manage</code> / <code>config.manage</code></td><td>Sí (operativa). No el historial interno</td><td>Toda su red. Configura el módulo; no lee el cuaderno</td></tr>
+    <tr><td>Admin de clínica</td><td><code>cases.manage</code> + <code>history.*</code></td><td>Sí</td><td>Su sede. Opera casos derivados a una agenda suya; no lee el cuaderno ajeno</td></tr>
+    <tr><td>Operador</td><td><code>cases.operate</code> + <code>history.*</code></td><td>No (sí ve listados, workspace e historial)</td><td>Su sede y casos en agendas de su sede</td></tr>
+    <tr><td>Especialista</td><td><code>cases.operate</code></td><td>No</td><td>Agendas donde es el especialista vinculado. No confirma pagos.</td></tr>
+  </table>
+  <p>Usuarios con sede asignada (no dueño ni admin de red): formularios traen la sede preseleccionada. Sujetos y actores se listan solo de esa sede. Agendas: las propias y las <strong>abiertas a la red</strong>. Casos: los propios y los que están en una agenda de su sede.</p>
+  <p>Especialista: el actor debe tener <strong>Usuario vinculado</strong>. Sin vínculo no ve casos.</p>
+
+  <h2>3. Plantilla de flujo y especialista</h2>
+  <ol>
+    <li>En <strong>Operativa → Actores</strong>, un especialista/profesional puede tener <strong>Plantilla de flujo por defecto</strong>.</li>
+    <li>Al crear un caso y elegir una agenda de ese especialista, si Plantilla está vacía se sugiere esa plantilla.</li>
+    <li>Al guardar, el sistema <strong>respeta la plantilla elegida</strong>. Solo usa la default de la red si el campo quedó vacío.</li>
+    <li>En edición el campo queda <strong>bloqueado</strong> (las etapas ya están inicializadas).</li>
+  </ol>
+
+  <h2>4. Formulario de agenda</h2>
+  <p>Menú Operativa → Agenda. Solo perfiles con <code>cases.manage</code> crean/editan.</p>
+  <table>
+    <tr><th>Campo</th><th>Oblig.</th><th>Default</th><th>Notas</th></tr>
+    <tr><td>Sede</td><td>Sí</td><td>Sede del usuario si es fija</td><td></td></tr>
+    <tr><td>Especialista</td><td>No</td><td>—</td><td>Actores categoría especialista/profesional</td></tr>
+    <tr><td>Título</td><td>No</td><td>—</td><td>Visible en listado y dashboard</td></tr>
+    <tr><td>Fecha</td><td>Sí</td><td>Hoy</td><td></td></tr>
+    <tr><td>Hora de inicio</td><td>No</td><td>—</td><td>Base para calcular turnos</td></tr>
+    <tr><td>Minutos por paciente</td><td>Sí</td><td>30</td><td>Mínimo 5</td></tr>
+    <tr><td>Estado</td><td>Sí</td><td>Planificada</td><td>Planificada → Confirmada → Realizada / Cancelada</td></tr>
+    <tr><td>Abierta a la red</td><td>No</td><td>No</td><td>Otras sedes pueden sumar derivaciones. El historial sigue privado</td></tr>
+    <tr><td>Notas</td><td>No</td><td>—</td><td></td></tr>
+  </table>
+  <p><strong>Hora sugerida al asignar un caso:</strong> fecha + hora de inicio + (casos ya asignados × minutos). Ejemplo: 09:00, 30 min, 2 casos previos → 10:00.</p>
+  <p>Pestaña <strong>Casos asignados</strong>: asignar (casos sin agenda <em>de esa sede</em>), editar hora, quitar, abrir espacio de trabajo. Columna sede de origen. Otras sedes enganchan el caso desde el formulario de derivación.</p>
+
+  <h2>4.1 Formulario de sujeto</h2>
+  <p>Operativa → Sujetos. El <strong>propietario</strong> se elige o se crea en el mismo formulario (botón +; requiere <code>cases.manage</code>). Si el documento ya existe en esa clínica, se reutiliza; otra sede puede tener su propio registro. El nombre del propietario abre su ficha (pestaña de animales). En un sujeto se listan los <strong>otros</strong> del mismo dueño.</p>
+
+  <h2>5. Formulario de caso (derivación)</h2>
+  <p>Menú Operativa → Casos. Alta/edición: <code>cases.manage</code>. Listado y workspace: <code>cases.operate</code>.</p>
+  <table>
+    <tr><th>Campo</th><th>Oblig.</th><th>Comportamiento</th></tr>
+    <tr><td>Sede</td><td>Sí</td><td>Preseleccionada si hay sede fija</td></tr>
+    <tr><td>Sujeto</td><td>No</td><td>Búsqueda por nombre y código</td></tr>
+    <tr><td>Plantilla de flujo</td><td>Sí</td><td>Editable al crear; solo lectura en edición</td></tr>
+    <tr><td>Código</td><td>No</td><td>Auto <code>CASE-xxxx</code></td></tr>
+    <tr><td>Título</td><td>Sí</td><td>Motivo</td></tr>
+    <tr><td>Estado</td><td>Sí</td><td>Default Abierto</td></tr>
+    <tr><td>Resumen</td><td>No</td><td>Se completa en etapa 3 del workspace</td></tr>
+    <tr><td>Agenda</td><td>No</td><td>Planificada o Confirmada de la sede o <strong>abierta a la red</strong>. Etiqueta: título · fecha · especialista · sede</td></tr>
+    <tr><td>Hora estimada</td><td>No</td><td>Turno de este caso dentro de la agenda</td></tr>
+    <tr><td>Datos adicionales</td><td>Según red</td><td>Campos personalizados</td></tr>
+  </table>
+  <div class="box">Al elegir agenda, si están vacíos: plantilla del especialista y hora estimada calculada. <strong>No</strong> pisa la sede del caso (origen). Si la agenda es de otra sede, la constancia muestra «Se atiende en».</div>
+
+  <h2>6. Espacio de trabajo — etapas (plantilla veterinaria)</h2>
+  <p>Ruta <code>/cases/{id}</code>. Solo la etapa actual es editable. Adjuntos se pueden gestionar mientras el caso esté abierto.</p>
+
+  <h3>Etapa 1 — Preagenda e intención (Pagos)</h3>
+  <table>
+    <tr><th>Campo</th><th>Oblig.</th><th>Validación</th></tr>
+    <tr><td>Monto de seña</td><td>Sí</td><td>Mínimo 0,01</td></tr>
+    <tr><td>Método</td><td>Sí</td><td>Texto</td></tr>
+  </table>
+  <p>Registrar seña → pago pendiente. Confirmar pago requiere <code>payments.confirm</code>. Para avanzar: al menos un pago <strong>confirmado</strong>.</p>
+
+  <h3>Etapa 2 — Confirmación (Checklist)</h3>
+  <table>
+    <tr><th>Requisito</th><th>Cómo se cumple</th></tr>
+    <tr><td>Pago confirmado</td><td>Pago con estado confirmado</td></tr>
+    <tr><td>Ayuno indicado</td><td>Checkbox</td></tr>
+    <tr><td>Estudios previos</td><td>Subir archivo (máx. 10 MB)</td></tr>
+  </table>
+  <p>Esta etapa es el criterio de «caso listo» en veterinaria (<code>confirmation_stage</code>) para confirmar la agenda.</p>
+
+  <h3>Etapa 3 — Ficha resumida</h3>
+  <p>Resumen clínico obligatorio para avanzar. Guardar ficha persiste resumen y metadata. Botón Avanzar etapa.</p>
+
+  <h3>Etapa 4 — Día de consulta (terminal)</h3>
+  <table>
+    <tr><th>Campo</th><th>Oblig. (vet)</th><th>Validación</th></tr>
+    <tr><td>Notas</td><td>No</td><td>Mín. 3 caracteres si se cargan</td></tr>
+    <tr><td>Diagnóstico</td><td>Sí</td><td>Mín. 3 caracteres</td></tr>
+    <tr><td>Tratamiento</td><td>No</td><td>—</td></tr>
+    <tr><td>Técnico interviniente</td><td>Sí</td><td>Actor o nombre libre</td></tr>
+  </table>
+  <p><strong>Finalizar consulta</strong> cierra el caso (no hay «Avanzar etapa» en terminal). Recalcula la agenda: si <code>auto_done</code> y todos los casos están cerrados o cancelados, la agenda pasa a Realizada.</p>
+
+  <h2>7. Confirmar agenda</h2>
+  <p>Acción en el listado. Modos: <strong>estricto</strong> (bloquea si hay incompletos), <strong>con alerta</strong> (default veterinaria), <strong>libre</strong>.</p>
+  <p>Criterio de caso listo: pago confirmado, o etapa de confirmación completada (default veterinaria).</p>
+
+  <h2>8. Dashboard</h2>
+  <ul>
+    <li><strong>Agendas pendientes</strong> — Planificadas/Confirmadas (propias y abiertas a la red). Columnas: título, fecha, sede, especialista, estado, casos listos. Filtro desde hoy (editable). Abrir agenda: solo la anfitriona o admin de red.</li>
+    <li><strong>Casos del día</strong> — <code>scheduled_at</code> hoy o agenda con fecha hoy. Acción espacio de trabajo.</li>
+  </ul>
+
+  <h2>9. Otras plantillas (resumen)</h2>
+  <p>Los packs viven en <code>database/industry-packs/*.json</code>. Sumar un rubro se hace configurando una red y exportándola; no hace falta una clase PHP.</p>
+  <table>
+    <tr><th>Plantilla</th><th>Etapas</th><th>Cierre exige diagnóstico</th></tr>
+    <tr><td>Veterinaria</td><td>pre_intent → confirmation → summary → consultation</td><td>Sí</td></tr>
+    <tr><td>Peluquería</td><td>reservation → confirmation → service → delivery</td><td>No</td></tr>
+    <tr><td>Genérico</td><td>intent → confirmation → summary → execution</td><td>No</td></tr>
+  </table>
+  <p>El workspace mapea 4 secciones de UI a claves; si la clave no existe, usa el orden de etapas (1.ª a 4.ª).</p>
+
+  <h2>10. Secuencia de punta a punta</h2>
+  <ol>
+    <li>Crear especialista (usuario + actor vinculado + plantilla por defecto opcional).</li>
+    <li>Crear propietario y sujeto (el dueño puede darse de alta desde el formulario del sujeto, botón +; el documento evita duplicar en esa sede).</li>
+    <li>Crear agenda (fecha, especialista, slots, título).</li>
+    <li>Crear caso: elegir plantilla y/o agenda (autocompleta vacíos).</li>
+    <li>Sistema inicializa primera etapa de la plantilla elegida.</li>
+    <li>Workspace: seña → checklist → ficha → finalizar consulta.</li>
+    <li>Admin confirma agenda cuando conviene (según modo).</li>
+    <li>Caso cerrado; agenda puede pasar a Realizada sola.</li>
+    <li>Si el historial está activo: en la ficha del sujeto, pestaña <strong>Historial</strong> (cuaderno) distinta de <strong>Casos asociados</strong>. PDF de un registro final o de la ficha completa (solo finales). Compartir con un caso es opt-in.</li>
+  </ol>
+
+  <h2>11. Historial interno (opt-in)</h2>
+  <p>Doble interruptor: red y sede. El admin de red habilita tipos y flags; el cuaderno lo operan admin de sede y operador. Dueño de plataforma y admin de red no leen el contenido. Las adendas no aparecen como filas principales. Los PDF A4 listan nombres de adjuntos, no incrustan archivos. Cada descarga queda auditada.</p>
+</body>
+</html>

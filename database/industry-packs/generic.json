@@ -1,0 +1,66 @@
+{
+    "key": "generic",
+    "name": "Genérico",
+    "terminology": [
+        {"entity_key": "organization", "label": "Sede", "label_plural": "Sedes"},
+        {"entity_key": "professional", "label": "Profesional", "label_plural": "Profesionales"},
+        {"entity_key": "specialist", "label": "Especialista", "label_plural": "Especialistas"},
+        {"entity_key": "client", "label": "Cliente", "label_plural": "Clientes"},
+        {"entity_key": "subject", "label": "Sujeto", "label_plural": "Sujetos"},
+        {"entity_key": "case", "label": "Caso", "label_plural": "Casos"},
+        {"entity_key": "history", "label": "Historial", "label_plural": "Historiales"},
+        {"entity_key": "history_entry", "label": "Registro", "label_plural": "Registros"},
+        {"entity_key": "ux.status_attended", "label": "Resuelto", "description": "Etiqueta visual para un caso finalizado correctamente."},
+        {"entity_key": "ux.action_finish", "label": "Finalizar y cerrar", "description": "Texto del botón para cerrar la atención en etapa terminal."},
+        {"entity_key": "ux.consultation_title", "label": "Cierre", "description": "Título de la sección terminal del espacio de trabajo."},
+        {"entity_key": "ux.agenda_confirmed_warn", "label": "Agenda confirmada con observaciones", "description": "Mensaje mostrado al confirmar agenda con casos incompletos."},
+        {"entity_key": "ux.case_diagnosis", "label": "Hallazgos", "description": "Etiqueta del campo de hallazgos al cerrar el caso."},
+        {"entity_key": "ux.case_treatment", "label": "Trabajo a realizar", "description": "Etiqueta del campo de trabajo o indicaciones al cerrar el caso."}
+    ],
+    "actor_types": [
+        {"key": "professional", "label": "Profesional", "category": "professional", "is_user_linkable": true, "show_in_directory": false},
+        {"key": "specialist", "label": "Especialista", "category": "specialist", "is_user_linkable": true, "show_in_directory": true},
+        {"key": "client", "label": "Cliente", "category": "client", "is_user_linkable": false, "show_in_directory": false}
+    ],
+    "workflow": {
+        "name": "Flujo estándar",
+        "instructions": "Presentarse en el horario indicado con la documentación solicitada.",
+        "consent_text": "Declaro haber leído las indicaciones y acepto las condiciones del servicio.",
+        "stages": [
+            {"key": "intent", "label": "Intención", "requirements": []},
+            {"key": "confirmation", "label": "Confirmación", "requirements": [
+                {"key": "payment_confirmed", "label": "Pago confirmado", "type": "payment"}
+            ]},
+            {"key": "summary", "label": "Resumen", "requirements": []},
+            {"key": "execution", "label": "Ejecución", "is_terminal": true, "requirements": [
+                {"key": "technical_responsible", "label": "Responsable técnico", "type": "field"}
+            ]}
+        ]
+    },
+    "custom_fields": [],
+    "settings": {
+        "agenda": {
+            "confirm_mode": "free",
+            "case_ready_criteria": "payment_confirmed",
+            "auto_done": false
+        },
+        "case": {
+            "finish_requires_diagnosis": false,
+            "finish_requires_technical": false
+        },
+        "modules": {
+            "history_enabled": false
+        }
+    },
+    "history_entry_types": [
+        {"key": "note", "label": "Nota", "description": "Observación o comentario."},
+        {"key": "intervention", "label": "Intervención", "description": "Trabajo o reparación realizada."},
+        {"key": "follow_up", "label": "Seguimiento", "description": "Control posterior."}
+    ],
+    "agenda": {
+        "slot_minutes": 30,
+        "start_time": "09:00",
+        "instructions": "Presentarse en el horario indicado con la documentación solicitada.",
+        "consent_text": "Declaro haber leído las indicaciones y acepto las condiciones del servicio."
+    }
+}

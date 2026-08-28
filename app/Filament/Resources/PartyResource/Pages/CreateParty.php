@@ -1,0 +1,16 @@
+<?php
+
+namespace App\Filament\Resources\PartyResource\Pages;
+
+use App\Filament\Resources\PartyResource;
+use Filament\Resources\Pages\CreateRecord;
+
+class CreateParty extends CreateRecord
+{
+    protected static string $resource = PartyResource::class;
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        return PartyResource::assignNetworkAndOrganization($data);
+    }
+}

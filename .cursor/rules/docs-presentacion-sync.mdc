@@ -1,0 +1,40 @@
+---
+description: Mantener presentacion.html alineada con cambios en documentación SURC
+globs: docs/**/*.md,presentacion.html
+alwaysApply: false
+---
+
+# Sincronizar presentacion.html con la documentación
+
+`presentacion.html` es la guía visual rápida para demos y presentaciones. Debe reflejar la información operativa de `docs/`, no duplicar detalle técnico.
+
+## Cuándo actualizar
+
+Al modificar `docs/MANUAL_USO.md`, `docs/MANUAL_CONFIGURACION.md` u otro doc en `docs/` que afecte:
+
+- URLs de acceso o credenciales demo
+- Usuarios, roles o permisos
+- Nombres de menús / secciones del panel
+- Flujos de demo o pasos operativos
+- Terminología visible para el usuario final
+
+Revisar si `presentacion.html` necesita el mismo cambio en forma resumida.
+
+## Qué NO copiar
+
+- Comandos artisan, migraciones, despliegue, export/import
+- Detalle de configuración avanzada (claves reservadas, esquemas JSON)
+- Contenido que solo interesa a desarrolladores
+
+## Criterio de contenido
+
+- Un solo archivo HTML autocontenido (CSS embebido)
+- Tono sobrio: sin emojis, pocos colores, tablas y listas breves
+- Orientado a quien presenta la app en vivo, no a quien la instala
+
+## Checklist al cerrar cambios en docs
+
+1. ¿Cambió algo que un presentador mostraría en pantalla? → actualizar la sección correspondiente en `presentacion.html`
+2. ¿Se agregó o eliminó un usuario/rol demo? → actualizar la tabla de usuarios
+3. ¿Cambió el guion de demo? → actualizar la sección "Guion sugerido"
+4. Si no aplica ninguno, no tocar `presentacion.html`

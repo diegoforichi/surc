@@ -1,0 +1,27 @@
+---
+description: SSH y deploy SURC solo en civetdur.uy; no tocar el resto de la cuenta de hosting
+alwaysApply: true
+---
+
+# Hosting — solo CIVET Durazno
+
+La cuenta SSH `puntoco2` (Bluehost, `173.254.29.47`) tiene **muchos sitios, mails y backups ajenos a SURC**. No se tocan.
+
+## Único lugar permitido
+
+- Sitio: `civetdur.uy` (hoy también el temporal `tah.dyz.mybluehost.me/website_bb9e69c3`)
+- Carpeta: `/home4/puntoco2/public_html/website_bb9e69c3`
+- SSH: `ssh -i ~/.ssh/id_ed25519_surc puntoco2@173.254.29.47`
+
+Antes de cualquier comando remoto, `cd` a esa carpeta. Listar, editar, subir o borrar **solo** ahí.
+
+## Prohibido
+
+- Cualquier otra ruta bajo `/home4/puntoco2` (`public_html` hermano, `mail`, `ssl`, `tmp`, `*.sql.gz`, `softaculous_backups`, `democontrolganado`, etc.)
+- `rm`, `mv`, `chmod` o `chown` fuera de `website_bb9e69c3`
+- `migrate:fresh`, `db:seed` completo / `DatabaseSeeder`
+- Guardar contraseñas, `.env` de producción o la clave privada en el repo o en el chat
+
+## Instalación
+
+Una instancia SURC = esta red = este dominio. Panel: `/admin` en `civetdur.uy`. Checklist: `docs/MANUAL_USO.md` Parte F.

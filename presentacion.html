@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SURC — Presentación</title>
+  <style>
+    :root {
+      --bg: #f8f9fa;
+      --surface: #ffffff;
+      --text: #1a1a1a;
+      --muted: #5c6370;
+      --border: #dde1e6;
+      --accent: #0d5c56;
+      --accent-soft: #e8f2f1;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      min-height: 100vh;
+    }
+
+    nav {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 1rem;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    nav h1 {
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      margin-bottom: 0.25rem;
+    }
+
+    nav .subtitle {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    nav ul { list-style: none; }
+
+    nav a {
+      display: block;
+      padding: 0.4rem 0.6rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      border-radius: 4px;
+    }
+
+    nav a:hover { background: var(--accent-soft); color: var(--accent); }
+
+    main {
+      padding: 2rem 2.5rem 3rem;
+      max-width: 900px;
+    }
+
+    section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    section h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    section h3 {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      margin: 1.25rem 0 0.5rem;
+      color: var(--text);
+    }
+
+    p, li { color: var(--text); }
+    p { margin-bottom: 0.75rem; }
+    .muted { color: var(--muted); font-size: 0.875rem; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      margin: 0.75rem 0;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    th {
+      font-weight: 600;
+      background: var(--bg);
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.8125rem;
+      background: var(--bg);
+      padding: 0.1rem 0.35rem;
+      border-radius: 3px;
+    }
+
+    .callout {
+      background: var(--accent-soft);
+      border-left: 3px solid var(--accent);
+      padding: 0.75rem 1rem;
+      margin: 0.75rem 0;
+      font-size: 0.875rem;
+    }
+
+    ol.steps { padding-left: 1.25rem; }
+    ol.steps li { margin-bottom: 0.35rem; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .layout { grid-template-columns: 1fr; }
+      nav { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+      main { padding: 1.25rem; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    footer {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav>
+      <h1>SURC</h1>
+      <p class="subtitle">Guía visual de presentación</p>
+      <ul>
+        <li><a href="#acceso">Acceso</a></li>
+        <li><a href="#usuarios">Usuarios demo</a></li>
+        <li><a href="#roles">Roles</a></li>
+        <li><a href="#sede-agenda">Sede y agenda</a></li>
+        <li><a href="#menu">Secciones del panel</a></li>
+        <li><a href="#demo">Guion sugerido</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <section id="acceso">
+        <h2>Acceso</h2>
+        <p>Todo el personal entra por la misma URL. Lo que cambia es el usuario y la contraseña.</p>
+        <table>
+          <thead>
+            <tr><th>Entorno</th><th>URL</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Panel admin (local)</td>
+              <td><code>http://127.0.0.1:8001/admin</code></td>
+            </tr>
+            <tr>
+              <td>Sitio público de la red</td>
+              <td><code>http://127.0.0.1:8001/red/red-veterinaria</code> (home con datos de la red, sedes, especialistas, blog, ayuda)</td>
+            </tr>
+            <tr>
+              <td>Espacio de trabajo de un caso</td>
+              <td><code>/cases/{id}</code> (desde el listado o la agenda)</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="muted">Contraseña demo de todos los usuarios listados: <code>password</code></p>
+      </section>
+
+      <section id="usuarios">
+        <h2>Usuarios demo</h2>
+        <p>Referencia rápida de cuentas disponibles en el entorno local con seed. La red demo usa la plantilla veterinaria; al crear otra red se elige el rubro (o una base genérica) y los menús cambian de nombre.</p>
+
+        <h3>Plataforma</h3>
+        <table>
+          <thead>
+            <tr><th>Email</th><th>Nombre</th><th>Rol</th><th>Para qué sirve</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>owner@surc.test</code></td>
+              <td>Dueño Plataforma</td>
+              <td>platform_owner</td>
+              <td>Crear redes, publicar manuales globales en Capacitación.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Red Veterinaria Demo</h3>
+        <table>
+          <thead>
+            <tr><th>Email</th><th>Nombre</th><th>Sede</th><th>Rol</th><th>Para qué sirve</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>admin@red-veterinaria.test</code></td>
+              <td>Admin Red Veterinaria</td>
+              <td>—</td>
+              <td>network_admin</td>
+              <td>Configura toda la red: sedes, usuarios, actores, flujos, campos.</td>
+            </tr>
+            <tr>
+              <td><code>admin@clinica-norte.test</code></td>
+              <td>Admin Clínica Norte</td>
+              <td>Clínica Norte</td>
+              <td>organization_admin</td>
+              <td>Gestiona usuarios de su clínica y la operativa diaria. Ideal para la demo.</td>
+            </tr>
+            <tr>
+              <td><code>operador@clinica-norte.test</code></td>
+              <td>Operador Clínica</td>
+              <td>Clínica Norte</td>
+              <td>operator</td>
+              <td>Recepción / mostrador. Opera casos en el espacio de trabajo.</td>
+            </tr>
+            <tr>
+              <td><code>especialista@clinica-norte.test</code></td>
+              <td>Dr. Especialista Demo</td>
+              <td>—</td>
+              <td>specialist</td>
+              <td>Veterinario con login propio. Ve solo sus agendas y casos asignados.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Red Peluquería Demo</h3>
+        <table>
+          <thead>
+            <tr><th>Email</th><th>Nombre</th><th>Rol</th><th>Para qué sirve</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>admin@red-peluqueria.test</code></td>
+              <td>Admin Red Peluquería</td>
+              <td>network_admin</td>
+              <td>Ejemplo de otra plantilla de rubro (peluquería).</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="roles">
+        <h2>Roles</h2>
+        <p>Jerarquía recomendada de puesta en marcha:</p>
+        <ol class="steps">
+          <li><strong>Dueño plataforma</strong> — crea la red y elige el rubro (veterinaria, peluquería, genérico u otro pack instalado).</li>
+          <li><strong>Admin de red</strong> — deja la red lista (configuración, sedes, usuarios).</li>
+          <li><strong>Admin de clínica</strong> — usuarios de su sede y casos del día.</li>
+          <li><strong>Operador / Especialista</strong> — operan casos en el espacio de trabajo.</li>
+        </ol>
+        <table>
+          <thead>
+            <tr><th>Rol</th><th>Menú principal</th><th>Tarea típica</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>platform_owner</td>
+              <td>Plataforma → Redes</td>
+              <td>Alta de redes nuevas.</td>
+            </tr>
+            <tr>
+              <td>network_admin</td>
+              <td>Configuración, Red, Operativa, Sitio público</td>
+              <td>Configurar red, sedes, actores, flujos, datos institucionales y el módulo de historial. No lee el cuaderno interno.</td>
+            </tr>
+            <tr>
+              <td>organization_admin</td>
+              <td>Red (usuarios), Operativa</td>
+              <td>Crear usuarios de la clínica (sede fija), casos, agenda e historial interno de la sede.</td>
+            </tr>
+            <tr>
+              <td>operator</td>
+              <td>Dashboard, Agenda, Casos (listados), Capacitación. Con historial activo: ficha del sujeto en lectura</td>
+              <td>Espacio de trabajo (registrar y confirmar seña, etapas, cierre). Carga el cuaderno interno. No crea ni edita agendas/casos/sujetos.</td>
+            </tr>
+            <tr>
+              <td>specialist</td>
+              <td>Agenda y casos propios, Capacitación</td>
+              <td>Atiende visitas asignadas; no confirma pagos.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout">
+          La <strong>Sede</strong> es el origen del sujeto y del caso. La agenda tiene una sede anfitriona (dónde se atiende). En perfiles con sede asignada, el formulario trae la sede preseleccionada.
+        </div>
+        <div class="callout">
+          Para vincular un especialista: crear usuario con rol <code>specialist</code>, luego en <strong>Operativa → Actores</strong> asignar <em>Usuario vinculado</em>.
+        </div>
+      </section>
+
+      <section id="sede-agenda">
+        <h2>Sede y agenda</h2>
+        <p>Conceptos clave para la demo operativa (aplican a cualquier rubro; los nombres cambian con la terminología de la red).</p>
+
+        <h3>Sede</h3>
+        <p>Lugar de origen del sujeto y del caso. En perfiles con sede asignada, el formulario la trae <strong>preseleccionada</strong>. Sujetos y actores se listan solo de esa sede. El admin de red ve todas las sedes.</p>
+
+        <h3>Agenda vs hora estimada</h3>
+        <table>
+          <thead>
+            <tr><th>Concepto</th><th>Qué es</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Agenda</strong></td>
+              <td>Visita de un especialista en una sede anfitriona y fecha. Puede marcarse <strong>Abierta a la red</strong> para que otras clínicas sumen derivaciones.</td>
+            </tr>
+            <tr>
+              <td><strong>Hora estimada</strong></td>
+              <td>Turno de <em>ese caso</em> dentro de la agenda (ej. 09:00, 09:30). No es “otra fecha”: es el slot del paciente.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Al elegir agenda en una derivación</h3>
+        <p>Si los campos están vacíos, el sistema completa automáticamente (sin pisar lo ya cargado):</p>
+        <ul>
+          <li><strong>Plantilla de flujo</strong> — si el especialista tiene una por defecto.</li>
+          <li><strong>Hora estimada</strong> — inicio de agenda + minutos por paciente × casos ya asignados.</li>
+        </ul>
+        <p class="muted">La sede del caso <strong>no cambia</strong>: el animal y el historial siguen en la clínica de origen. Si la agenda es de otra sede, el listado muestra «Se atiende en» y la constancia indica dónde presentarse.</p>
+        <p class="muted">La plantilla se elige al crear el caso y <strong>queda fija</strong> en edición. Al guardar se respeta la elegida (no se pisa con la default de la red).</p>
+        <p class="muted">En el selector de agenda se muestra: título (si existe) + fecha + especialista + sede.</p>
+        <p class="muted">Misma lógica al asignar casos desde <strong>Operativa → Agenda → Casos asignados</strong>. Al quedar en agenda se puede imprimir la <strong>constancia 80 mm</strong> (orden, indicaciones, firma en papel).</p>
+
+        <div class="callout">
+          <strong>Dashboard — Agendas pendientes:</strong> muestra columna <strong>Título</strong>. Por defecto lista próximas (filtro desde hoy); el filtro se puede cambiar o limpiar.
+        </div>
+      </section>
+
+      <section id="menu">
+        <h2>Secciones del panel</h2>
+        <p class="muted">Nombres con plantilla veterinaria. Pueden variar según terminología de la red.</p>
+
+        <div class="grid-2">
+          <div>
+            <h3>Configuración</h3>
+            <ul>
+              <li><strong>Terminología</strong> — nombres de clínica, animal, derivación, etc.</li>
+              <li><strong>Tipos de actores</strong> — propietario, especialista, profesional.</li>
+              <li><strong>Plantillas de flujo</strong> — etapas del caso y requisitos.</li>
+              <li><strong>Campos personalizados</strong> — datos extra en actores, sujetos y casos.</li>
+              <li><strong>Preferencias operativas</strong> — reglas de agenda, entidades activas, historial opt-in.</li>
+            </ul>
+            <h3>Red</h3>
+            <ul>
+              <li><strong>Clínicas</strong> — sedes de la red.</li>
+              <li><strong>Usuarios</strong> — altas con rol y sede asignada.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Sitio público y ayuda</h3>
+            <ul>
+              <li><strong>Datos institucionales</strong> — logo, foto de portada, slogan, descripción y contacto de la red (admin de red).</li>
+              <li><strong>Contenidos públicos</strong> — carrusel, blog y páginas de la red (admin de red).</li>
+              <li><strong>Ayuda → Capacitación</strong> — guías internas con los nombres de la red, filtradas por rol; PDF descargable. No se publican en el sitio.</li>
+            </ul>
+            <h3>Operativa</h3>
+            <ul>
+              <li><strong>Actores</strong> — propietarios, especialistas, profesionales.</li>
+              <li><strong>Agenda</strong> — visita en una sede y fecha. Casilla <em>Abierta a la red</em> para recibir derivaciones de otras clínicas.</li>
+              <li><strong>Animal</strong> — sujetos de la sede; con historia clínica activa, cuaderno interno (pestaña distinta de casos asociados). El admin de red no lo lee.</li>
+              <li><strong>Derivación</strong> — casos / turnos con flujo por etapas.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="demo">
+        <h2>Guion sugerido (demo clínica)</h2>
+        <p>Flujo corto para mostrar a veterinarios como usuario de clínica (~10 min).</p>
+        <ol class="steps">
+          <li>Ingresar con <code>admin@clinica-norte.test</code>.</li>
+          <li>Validar sede fija en formularios (un usuario de clínica no puede alta en otra sede).</li>
+          <li><strong>Red → Usuarios → Crear</strong> — mostrar alta de operador o especialista.</li>
+          <li><strong>Operativa → Actores</strong> — propietario y especialista (vincular usuario si aplica).</li>
+          <li><strong>Operativa → Animal</strong> — mascota; el propietario se puede crear en el mismo formulario (documento evita duplicar en esa clínica). Código automático. Si el historial está activo, entrar con cuenta de sede: registro interno, PDF de ficha y compartir con la derivación opt-in. El admin de red no lee el cuaderno.</li>
+          <li><strong>Operativa → Derivación</strong> — crear caso; elegir plantilla (queda fija); al elegir agenda, sugiere plantilla/hora/sede si están vacías.</li>
+          <li><strong>Operativa → Agenda</strong> — alternativa: crear visita y asignar casos con hora sugerida.</li>
+          <li>Abrir <strong>Espacio de trabajo</strong> — recorrer etapas (seña, confirmación, ficha, consulta). El operador confirma la seña.</li>
+          <li>Mostrar sitio público <code>/red/red-veterinaria</code> (home con slogan/contacto de la red, sedes, especialista, blog, ayuda). El WhatsApp de portada es el de la red, no el de una clínica.</li>
+          <li>En el panel: <strong>Ayuda → Capacitación</strong> según el rol (en veterinaria se lee Animal / Historia clínica). Descargar una guía PDF.</li>
+        </ol>
+      </section>
+
+      <footer>
+        Referencia visual para presentaciones. No sustituye la documentación en <code>docs/</code>
+        (<a href="docs/README.md">índice</a>, <a href="docs/MANUAL_USO.md">uso</a>, <a href="docs/FLUJO_OPERATIVO.html">flujo operativo</a>).
+        Última revisión: agosto 2026.
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

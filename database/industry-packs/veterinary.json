@@ -1,0 +1,101 @@
+{
+    "key": "veterinary",
+    "name": "Veterinaria",
+    "terminology": [
+        {"entity_key": "organization", "label": "Clínica", "label_plural": "Clínicas"},
+        {"entity_key": "professional", "label": "Veterinario encargado", "label_plural": "Veterinarios"},
+        {"entity_key": "specialist", "label": "Especialista", "label_plural": "Especialistas"},
+        {"entity_key": "client", "label": "Propietario", "label_plural": "Propietarios"},
+        {"entity_key": "subject", "label": "Animal", "label_plural": "Animales"},
+        {"entity_key": "case", "label": "Derivación", "label_plural": "Derivaciones"},
+        {"entity_key": "history", "label": "Historia clínica", "label_plural": "Historias clínicas"},
+        {"entity_key": "history_entry", "label": "Registro clínico", "label_plural": "Registros clínicos"},
+        {"entity_key": "ux.status_attended", "label": "Atendido", "description": "Etiqueta visual para un caso finalizado correctamente."},
+        {"entity_key": "ux.action_finish", "label": "Finalizar consulta", "description": "Texto del botón para cerrar la atención en etapa terminal."},
+        {"entity_key": "ux.consultation_title", "label": "Día de consulta", "description": "Título de la sección terminal del espacio de trabajo."},
+        {"entity_key": "ux.agenda_confirmed_warn", "label": "Agenda confirmada con observaciones", "description": "Mensaje mostrado al confirmar agenda con casos incompletos."},
+        {"entity_key": "ux.case_diagnosis", "label": "Diagnóstico", "description": "Etiqueta del campo de hallazgos al cerrar el caso."},
+        {"entity_key": "ux.case_treatment", "label": "Tratamiento", "description": "Etiqueta del campo de trabajo o indicaciones al cerrar el caso."}
+    ],
+    "actor_types": [
+        {"key": "professional", "label": "Veterinario encargado", "category": "professional", "is_user_linkable": true, "show_in_directory": false},
+        {"key": "specialist", "label": "Especialista", "category": "specialist", "is_user_linkable": true, "show_in_directory": true},
+        {"key": "client", "label": "Propietario", "category": "client", "is_user_linkable": false, "show_in_directory": false}
+    ],
+    "workflow": {
+        "name": "Flujo de derivación veterinaria",
+        "instructions": "Presentarse 15 minutos antes.\nRespetar ayuno si fue indicado.\nTraer estudios previos y documento del responsable.",
+        "consent_text": "Declaro haber recibido las indicaciones de preparación y acepto las condiciones de la atención programada.",
+        "stages": [
+            {"key": "pre_intent", "label": "Preagenda e intención", "requirements": [
+                {"key": "deposit_registered", "label": "Seña registrada", "type": "payment"}
+            ]},
+            {"key": "confirmation", "label": "Confirmación", "requirements": [
+                {"key": "payment_confirmed", "label": "Pago confirmado", "type": "payment"},
+                {"key": "fasting", "label": "Ayuno indicado", "type": "checkbox"},
+                {"key": "prior_studies", "label": "Estudios previos adjuntos", "type": "file"}
+            ]},
+            {"key": "summary", "label": "Ficha resumida", "requirements": [
+                {"key": "summary_loaded", "label": "Resumen clínico cargado", "type": "field"}
+            ]},
+            {"key": "consultation", "label": "Día de consulta", "is_terminal": true, "requirements": [
+                {"key": "technical_responsible", "label": "Técnico interviniente registrado", "type": "field"}
+            ]}
+        ]
+    },
+    "custom_fields": [
+        {"entity_type": "subject", "key": "species", "label": "Especie", "field_type": "text"},
+        {"entity_type": "subject", "key": "breed", "label": "Raza", "field_type": "text"},
+        {"entity_type": "subject", "key": "sex", "label": "Sexo", "field_type": "select", "options": {"values": ["Macho", "Hembra"]}},
+        {"entity_type": "subject", "key": "age", "label": "Edad", "field_type": "number"},
+        {"entity_type": "party", "key": "address", "label": "Dirección", "field_type": "text"},
+        {"entity_type": "case", "key": "diagnosis", "label": "Diagnóstico", "field_type": "textarea"},
+        {"entity_type": "case", "key": "treatment", "label": "Tratamiento", "field_type": "textarea"}
+    ],
+    "settings": {
+        "agenda": {
+            "confirm_mode": "warn",
+            "case_ready_criteria": "confirmation_stage",
+            "auto_done": true
+        },
+        "case": {
+            "finish_requires_diagnosis": true,
+            "finish_requires_technical": true
+        },
+        "modules": {
+            "history_enabled": false
+        }
+    },
+    "history_entry_types": [
+        {"key": "consultation", "label": "Consulta", "description": "Atención clínica del día.", "field_schema": [
+            {"key": "weight", "label": "Peso", "type": "number"},
+            {"key": "temperature", "label": "Temperatura", "type": "number"},
+            {"key": "findings", "label": "Diagnóstico / hallazgos", "type": "textarea", "required": true},
+            {"key": "treatment", "label": "Tratamiento / indicaciones", "type": "textarea"},
+            {"key": "next_due", "label": "Próxima fecha", "type": "date"}
+        ]},
+        {"key": "control", "label": "Control", "description": "Seguimiento de un tratamiento o evolución.", "field_schema": [
+            {"key": "weight", "label": "Peso", "type": "number"},
+            {"key": "findings", "label": "Hallazgos", "type": "textarea"},
+            {"key": "notes", "label": "Observaciones", "type": "textarea"},
+            {"key": "next_due", "label": "Próxima fecha", "type": "date"}
+        ]},
+        {"key": "vaccine", "label": "Vacuna", "description": "Aplicación de vacuna u otro producto biológico.", "field_schema": [
+            {"key": "product", "label": "Producto", "type": "text", "required": true},
+            {"key": "batch", "label": "Lote", "type": "text"},
+            {"key": "next_due", "label": "Próxima fecha", "type": "date"},
+            {"key": "notes", "label": "Observaciones", "type": "textarea"}
+        ]},
+        {"key": "study", "label": "Estudio", "description": "Estudios complementarios e informes.", "field_schema": [
+            {"key": "notes", "label": "Indicación", "type": "textarea"},
+            {"key": "findings", "label": "Resultados", "type": "textarea"},
+            {"key": "next_due", "label": "Próxima fecha", "type": "date"}
+        ]}
+    ],
+    "agenda": {
+        "slot_minutes": 30,
+        "start_time": "09:00",
+        "instructions": "Presentarse 15 minutos antes.\nRespetar ayuno si fue indicado.\nTraer estudios previos y documento del responsable.",
+        "consent_text": "Declaro haber recibido las indicaciones de preparación y acepto las condiciones de la atención programada."
+    }
+}

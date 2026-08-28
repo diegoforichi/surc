@@ -1,0 +1,83 @@
+{
+    "key": "grooming",
+    "name": "Peluquería",
+    "terminology": [
+        {"entity_key": "organization", "label": "Local", "label_plural": "Locales"},
+        {"entity_key": "professional", "label": "Recepcionista", "label_plural": "Recepcionistas"},
+        {"entity_key": "specialist", "label": "Estilista", "label_plural": "Estilistas"},
+        {"entity_key": "client", "label": "Cliente", "label_plural": "Clientes"},
+        {"entity_key": "subject", "label": "Mascota", "label_plural": "Mascotas"},
+        {"entity_key": "case", "label": "Turno", "label_plural": "Turnos"},
+        {"entity_key": "history", "label": "Historial", "label_plural": "Historiales"},
+        {"entity_key": "history_entry", "label": "Registro", "label_plural": "Registros"},
+        {"entity_key": "ux.status_attended", "label": "Entregado", "description": "Etiqueta visual para un turno finalizado correctamente."},
+        {"entity_key": "ux.action_finish", "label": "Finalizar servicio", "description": "Texto del botón para cerrar la atención en etapa terminal."},
+        {"entity_key": "ux.consultation_title", "label": "Entrega", "description": "Título de la sección terminal del espacio de trabajo."},
+        {"entity_key": "ux.agenda_confirmed_warn", "label": "Agenda confirmada con observaciones", "description": "Mensaje mostrado al confirmar agenda con casos incompletos."},
+        {"entity_key": "ux.case_diagnosis", "label": "Observaciones del servicio", "description": "Etiqueta del campo de hallazgos al cerrar el caso."},
+        {"entity_key": "ux.case_treatment", "label": "Indicaciones", "description": "Etiqueta del campo de trabajo o indicaciones al cerrar el caso."}
+    ],
+    "actor_types": [
+        {"key": "professional", "label": "Recepcionista", "category": "professional", "is_user_linkable": true, "show_in_directory": false},
+        {"key": "specialist", "label": "Estilista", "category": "specialist", "is_user_linkable": true, "show_in_directory": true},
+        {"key": "client", "label": "Cliente", "category": "client", "is_user_linkable": false, "show_in_directory": false}
+    ],
+    "workflow": {
+        "name": "Flujo de turno peluquería",
+        "instructions": "Llegar en horario. Informar si hay alergias o sensibilidad de piel.",
+        "consent_text": "Autorizo el servicio indicado y declaro haber informado particularidades relevantes.",
+        "stages": [
+            {"key": "reservation", "label": "Reserva", "requirements": [
+                {"key": "deposit_registered", "label": "Seña registrada", "type": "payment"}
+            ]},
+            {"key": "confirmation", "label": "Confirmación", "requirements": [
+                {"key": "payment_confirmed", "label": "Pago confirmado", "type": "payment"}
+            ]},
+            {"key": "service", "label": "Servicio", "requirements": [
+                {"key": "service_notes", "label": "Notas del servicio", "type": "field"}
+            ]},
+            {"key": "delivery", "label": "Entrega", "is_terminal": true, "requirements": [
+                {"key": "technical_responsible", "label": "Estilista registrado", "type": "field"}
+            ]}
+        ]
+    },
+    "custom_fields": [
+        {"entity_type": "subject", "key": "breed", "label": "Raza", "field_type": "text"},
+        {"entity_type": "subject", "key": "sex", "label": "Sexo", "field_type": "select", "options": {"values": ["Macho", "Hembra"]}},
+        {"entity_type": "subject", "key": "age", "label": "Edad", "field_type": "number"},
+        {"entity_type": "party", "key": "address", "label": "Dirección", "field_type": "text"},
+        {"entity_type": "case", "key": "service_type", "label": "Tipo de servicio", "field_type": "select", "options": {"values": ["Baño", "Corte", "Baño y corte", "Otros"]}}
+    ],
+    "settings": {
+        "agenda": {
+            "confirm_mode": "warn",
+            "case_ready_criteria": "payment_confirmed",
+            "auto_done": true
+        },
+        "case": {
+            "finish_requires_diagnosis": false,
+            "finish_requires_technical": true
+        },
+        "modules": {
+            "history_enabled": false
+        }
+    },
+    "history_entry_types": [
+        {"key": "service_note", "label": "Nota de servicio", "description": "Preferencias o resultado del servicio.", "field_schema": [
+            {"key": "notes", "label": "Detalle", "type": "textarea"}
+        ]},
+        {"key": "incident", "label": "Incidencia", "description": "Evento a tener en cuenta.", "field_schema": [
+            {"key": "severity", "label": "Severidad", "type": "select", "options": ["baja", "media", "alta"]},
+            {"key": "notes", "label": "Qué ocurrió", "type": "textarea"}
+        ]},
+        {"key": "preference", "label": "Preferencia", "description": "Indicaciones habituales del cliente.", "field_schema": [
+            {"key": "notes", "label": "Indicación", "type": "textarea"}
+        ]}
+    ],
+    "agenda": {
+        "slot_minutes": 30,
+        "start_time": "09:00",
+        "instructions": "Llegar en horario. Informar si hay alergias o sensibilidad de piel.",
+        "consent_text": "Autorizo el servicio indicado y declaro haber informado particularidades relevantes."
+    }
+}
